@@ -19,9 +19,17 @@ import java.util.List;
 public class SocketServerImpl extends Thread implements SocketServer {
     private ServerSocket serverSocket;
 
+    private CircularShifter circularShifter;
+    private Alphabetizer alphabetizer;
+    private Output output;
+
     public SocketServerImpl(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         serverSocket.setSoTimeout(60000);
+
+        circularShifter = new CircularShifterImpl();
+        alphabetizer = new AlphabetizerImpl();
+        output = new OutputImpl();
     }
 
     public void run()
@@ -30,44 +38,34 @@ public class SocketServerImpl extends Thread implements SocketServer {
         {
             try
             {
-                System.out.println("等待远程连接，端口号为：" + serverSocket.getLocalPort() + "...");
+                System.out.println("Waiting for being connected...");
                 Socket server = serverSocket.accept();
-                System.out.println("远程主机地址：" + server.getRemoteSocketAddress());
+                System.out.println("Connection success!");
+                System.out.println("Remote address is: " + server.getRemoteSocketAddress());
                 DataInputStream in = new DataInputStream(server.getInputStream());
 
-                String str = in.readUTF();
-                System.out.println(str);
+                String lines = in.readUTF();
+                System.out.println(lines);
 
-                // circular shifter
-                CircularShifter shifter = new CircularShifterImpl();
-
-                // alphabetizer
-                Alphabetizer alphabetizer = new AlphabetizerImpl();
-
-                // line printer
-                Output output = new OutputImpl();
-
-                shifter.setup(str);
-
-                // sort all shifts alphabetically
-                alphabetizer.alpha(shifter);
-
-                // print sorted shifts
+                // 循环移位
+                circularShifter.setup(lines);
+                // 排序
+                alphabetizer.alpha(circularShifter);
+                // 输出
                 List<String> res = output.printResult(alphabetizer);
 
                 DataOutputStream out = new DataOutputStream(server.getOutputStream());
 
                 StringBuilder builder = new StringBuilder();
-                builder.append("运行结果：\n");
+                builder.append("The result is:\n");
                 for (String s : res) {
                     builder.append(s + "\n");
                 }
-                builder.append("谢谢连接我：" + server.getLocalSocketAddress() + "\nGoodbye!");
                 out.writeUTF(builder.toString());
                 server.close();
             }catch(SocketTimeoutException s)
             {
-                System.out.println("Socket timed out!");
+                System.out.println("The socket time out!");
                 break;
             }catch(IOException e)
             {

@@ -15,75 +15,81 @@ import java.io.IOException;
 import java.util.List;
 
 public class KWICImpl extends Thread implements KWIC {
-    private final String CMD_PROMPT = "####################\n1、命令行输入\n2、文件输入\n3、Socket输入\n4、退出\n请输入序号以选择运行模式：";
-    private final String INPUT_PROMPT = "请输入：";
-    private final String FILE_INPUT_PROMPT = "请输入文件路径+文件名（例如C:\\Desktop\\input.txt）：";
+
+    private Input input;
+    private CircularShifter circularShifter;
+    private Alphabetizer alphabetizer;
+    private Output output;
+
+    private final String OPERATION_MODE_CHOOSE = "a、命令行输入\nb、文件输入\nc、Socket输入\nd、退出\n请输入序号以选择运行模式：";
+    private final String CMD_INPUT_INDICATION = "Please enter: ";
+    private final String FILE_INPUT_INDICATION = "Please enter the file path like \"C:\\Desktop\\input.txt\"：";
 
     private boolean isCmdMode = true;
 
-    // cmds
-    private final int CMD_ADD_LINE = 100;
-    private final int FILE_ADD_LINES = 101;
-    private final int SOCKET_ADD_LINES = 102;
-    private final int CMD_QUIT = 103;
+    private final String CMD_INPUT = "CMD_INPUT";
+    private final String FILE_INPUT = "FILE_INPUT";
+    private final String SOCKET_INPUT = "SOCKET_INPUT";
+    private final String QUIT = "QUIT";
 
-    private int parseCmd(String cmd) {
-        int cmdCode = -1;
-        if("1".equals(cmd)) {
-            cmdCode = CMD_ADD_LINE;
-        } else if ("2".equals(cmd)) {
-            cmdCode = FILE_ADD_LINES;
-        }  else if ("3".equals(cmd)) {
-            cmdCode = SOCKET_ADD_LINES;
-        } else if ("4".equals(cmd)) {
-            cmdCode = CMD_QUIT;
+    private void initialize() {
+        input = new InputImpl();
+        circularShifter = new CircularShifterImpl();
+        alphabetizer = new AlphabetizerImpl();
+        output = new OutputImpl();
+    }
+
+    private String analysisOperation(String operation) {
+        String operationMode = null;
+        if("a".equals(operation)) {
+            operationMode = CMD_INPUT;
+        } else if ("b".equals(operation)) {
+            operationMode = FILE_INPUT;
+        }  else if ("c".equals(operation)) {
+            operationMode = SOCKET_INPUT;
+        } else if ("d".equals(operation)) {
+            operationMode = QUIT;
         }
 
-        return cmdCode;
+        return operationMode;
     }
 
     @Override
     public void execute() {
-        String line = null;
-        int cmdCode = -1;
+        String lines = null;
+        String operationMode = null;
 
-        // initialize all variables
-        // input reader
-        Input input = new InputImpl();
+        // // 初始化操作
+        // input = new InputImpl();
+        // circularShifter = new CircularShifterImpl();
+        // alphabetizer = new AlphabetizerImpl();
+        // output = new OutputImpl();
+        initialize();
 
-        // circular shifter
-        CircularShifter shifter = new CircularShifterImpl();
+        System.out.println("Welcome to the KWIC System!!");
 
-        // alphabetizer
-        Alphabetizer alphabetizer = new AlphabetizerImpl();
-
-        // line printer
-        Output output = new OutputImpl();
-
-        System.out.println("欢迎来到KWIC索引系统！");
-
-        while (!"q".equals(line)) {
+        while (!"q".equals(lines)) {
             if (isCmdMode) {
-                System.out.print(CMD_PROMPT);
+                System.out.print(OPERATION_MODE_CHOOSE);
             } else {
-                if (cmdCode == CMD_ADD_LINE) {
-                    System.out.print(INPUT_PROMPT);
-                } else if (cmdCode == FILE_ADD_LINES) {
-                    System.out.print(FILE_INPUT_PROMPT);
+                if (operationMode == CMD_INPUT) {
+                    System.out.print(CMD_INPUT_INDICATION);
+                } else if (operationMode == FILE_INPUT) {
+                    System.out.print(FILE_INPUT_INDICATION);
                 }
             }
-            line = input.lineInput();
+            lines = input.lineInput();
 
             if (isCmdMode) {
-                cmdCode = parseCmd(line);
-                switch (cmdCode) {
-                    case CMD_ADD_LINE:
+                operationMode = analysisOperation(lines);
+                switch (operationMode) {
+                    case CMD_INPUT:
                         isCmdMode = false;
                         break;
-                    case FILE_ADD_LINES:
+                    case FILE_INPUT:
                         isCmdMode = false;
                         break;
-                    case SOCKET_ADD_LINES:
+                    case SOCKET_INPUT:
                         try {
                             Thread scThread = new SocketServerImpl(8080);
                             scThread.run();
@@ -91,32 +97,33 @@ public class KWICImpl extends Thread implements KWIC {
                             e.printStackTrace();
                         }
                         break;
-                    case CMD_QUIT:
-                        System.out.println("Good Bye!");
+                    case QUIT:
+                        System.out.println("Quit Success!");
                         System.exit(0);
                         break;
 
                     default:
-                        System.out.println("请选择正确的序号！");
+                        System.out.println("Please choose correct mode('a', 'b', 'c' or 'd')!");
                         break;
                 }
             } else {
-                if (cmdCode == CMD_ADD_LINE) {
-                    shifter.setup(line);
-                } else if (cmdCode == FILE_ADD_LINES) {
-                    List<String> fileLines = input.fileInput(line);
-                    shifter.setup(fileLines);
+                // 循环移位
+                if (operationMode == CMD_INPUT) {
+                    circularShifter.setup(lines);
+                } else if (operationMode == FILE_INPUT) {
+                    List<String> fileLines = input.fileInput(lines);
+                    circularShifter.setup(fileLines);
                 }
-                if (shifter.getLineCount() == 0) {
-                    System.out.println("<---内容为空！--->");
+                if (circularShifter.getLineCount() == 0) {
+                    System.out.println("The content is empty!");
                 } else {
-                    // 排序移位后的结果
-                    alphabetizer.alpha(shifter);
+                    // 排序
+                    alphabetizer.alpha(circularShifter);
 
-                    // 输出排序后的结果
-                    if (cmdCode == CMD_ADD_LINE) {
+                    // 输出或存储
+                    if (operationMode == CMD_INPUT) {
                         output.printResult(alphabetizer);
-                    } else if (cmdCode == FILE_ADD_LINES) {
+                    } else if (operationMode == FILE_INPUT) {
                         output.writeFile(alphabetizer);
                     }
                 }
@@ -125,7 +132,7 @@ public class KWICImpl extends Thread implements KWIC {
         }
     }
 
-    public void run() {
-        execute();
-    }
+    // public void run() {
+    //     execute();
+    // }
 }
