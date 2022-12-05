@@ -30,6 +30,8 @@ public class SocketServerImpl extends Thread implements SocketServer {
         circularShifter = new CircularShifterImpl();
         alphabetizer = new AlphabetizerImpl();
         output = new OutputImpl();
+
+        System.out.println("Waiting for being connected, listening on " + port + "...");
     }
 
     public void run()
@@ -38,7 +40,6 @@ public class SocketServerImpl extends Thread implements SocketServer {
         {
             try
             {
-                System.out.println("Waiting for being connected...");
                 Socket server = serverSocket.accept();
                 System.out.println("Connection success!");
                 System.out.println("Remote address is: " + server.getRemoteSocketAddress());
