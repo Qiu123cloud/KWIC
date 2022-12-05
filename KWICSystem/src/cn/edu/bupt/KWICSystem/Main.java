@@ -9,7 +9,8 @@ public class Main {
 
         KWIC kwic = new KWICImpl();
         kwic.execute();
-        
 
+
+        
     }
 }
