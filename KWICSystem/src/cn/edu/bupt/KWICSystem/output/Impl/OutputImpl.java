@@ -14,10 +14,10 @@ public class OutputImpl implements Output {
 
     /**
      * 打印运行结果
-     * @param alphabetizer
+     * @param alphabetizer：输出排序后的结果
      */
     @Override
-    public List<String> print(Alphabetizer alphabetizer) {
+    public List<String> printResult(Alphabetizer alphabetizer) {
         List<String> res = new ArrayList<>();
 
         System.out.println("运行结果:");
@@ -30,25 +30,26 @@ public class OutputImpl implements Output {
     }
 
     /**
-     * 写入运行结果到文件
+     * 写入运行结果到文件：输出排序后的结果
      * @param alphabetizer
      */
     @Override
-    public void write(Alphabetizer alphabetizer) {
-        File writename = new File("output.txt");
+    public void writeFile(Alphabetizer alphabetizer) {
+        //输出结果的文件名称
+        File filename = new File("output.txt");
 
         try {
-            writename.createNewFile();
-            BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+            filename.createNewFile();
+            BufferedWriter result = new BufferedWriter(new FileWriter(filename));
             for(int i = 0; i < alphabetizer.getLineCount(); i++) {
-                out.write(alphabetizer.getLineAsString(i) + "\r\n");
+                result.write(alphabetizer.getLineAsString(i) + "\r\n");
             }
-            out.flush();
-            out.close();
+            result.flush();
+            result.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("运行结果输出在这个文件中：" + writename.getAbsolutePath());
+        System.out.println("运行结果已经成功存放在文件：" + filename.getAbsolutePath());
     }
 }

@@ -53,7 +53,7 @@ public class SocketServerImpl extends Thread implements SocketServer {
                 alphabetizer.alpha(shifter);
 
                 // print sorted shifts
-                List<String> res = output.print(alphabetizer);
+                List<String> res = output.printResult(alphabetizer);
 
                 DataOutputStream out = new DataOutputStream(server.getOutputStream());
 

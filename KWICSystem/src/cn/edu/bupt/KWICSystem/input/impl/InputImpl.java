@@ -10,37 +10,37 @@ public class InputImpl implements Input {
     private Scanner scanner = new Scanner(System.in);
 
     @Override
-    public String readLine(){
+    public String lineInput(){
         return scanner.nextLine();
     }
 
     @Override
-    public List<String> readFile(String fileName) {
-        List<String> textFile = new ArrayList<>();
-        Scanner input = null;
+    public List<String> fileInput(String fileName) {
+        List<String> contentInput = new ArrayList<>();
+        Scanner FileData = null;
         try
         {
-            input = new Scanner(new FileInputStream(fileName));
+            FileData = new Scanner(new FileInputStream(fileName));
 
-            while(input.hasNextLine())
+            while(FileData.hasNextLine())
             {
-                String line = input.nextLine();
+                String line = FileData.nextLine();
 
-                textFile.add(line);
+                contentInput.add(line);
             }
         }
         catch (FileNotFoundException e)
         {
-            System.out.println("File not found");
+            System.out.println("文件未找到，请输入正确的文件路径名");
         }
         finally
         {
-            if (input != null) {
-                input.close();
+            if (FileData  != null) {
+                FileData .close();
             }
         }
 
-        return textFile;
+        return contentInput;
     }
 
 }

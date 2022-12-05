@@ -72,7 +72,7 @@ public class KWICImpl extends Thread implements KWIC {
                     System.out.print(FILE_INPUT_PROMPT);
                 }
             }
-            line = input.readLine();
+            line = input.lineInput();
 
             if (isCmdMode) {
                 cmdCode = parseCmd(line);
@@ -104,7 +104,7 @@ public class KWICImpl extends Thread implements KWIC {
                 if (cmdCode == CMD_ADD_LINE) {
                     shifter.setup(line);
                 } else if (cmdCode == FILE_ADD_LINES) {
-                    List<String> fileLines = input.readFile(line);
+                    List<String> fileLines = input.fileInput(line);
                     shifter.setup(fileLines);
                 }
                 if (shifter.getLineCount() == 0) {
@@ -115,9 +115,9 @@ public class KWICImpl extends Thread implements KWIC {
 
                     // 输出排序后的结果
                     if (cmdCode == CMD_ADD_LINE) {
-                        output.print(alphabetizer);
+                        output.printResult(alphabetizer);
                     } else if (cmdCode == FILE_ADD_LINES) {
-                        output.write(alphabetizer);
+                        output.writeFile(alphabetizer);
                     }
                 }
                 isCmdMode = true;
