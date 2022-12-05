@@ -34,9 +34,9 @@ public class OutputImpl implements Output {
      * @param alphabetizer
      */
     @Override
-    public void writeFile(Alphabetizer alphabetizer) {
+    public void writeFile(Alphabetizer alphabetizer, String path) {
         //输出结果的文件名称
-        File filename = new File("output.txt");
+        File filename = new File(path);
 
         try {
             filename.createNewFile();

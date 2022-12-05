@@ -8,23 +8,23 @@ public class Main {
 
     public static void main(String[] args) {
         String serverName = "127.0.0.1";
-        int port = 8080;
+        int port = 8001;
         try
         {
-            System.out.println("连接到主机：" + serverName + " ，端口号：" + port);
+            System.out.println("Request to connect to " + serverName + ":" + port);
             Socket client = new Socket(serverName, port);
-
+            System.out.println("Connection success!");
             OutputStream outToServer = client.getOutputStream();
             DataOutputStream out = new DataOutputStream(outToServer);
 
-            System.out.print("请输入：");
+            System.out.print("Please enter: \n");
 
             Scanner scanner = new Scanner(System.in);
             out.writeUTF(scanner.nextLine());
 
             InputStream inFromServer = client.getInputStream();
             DataInputStream in = new DataInputStream(inFromServer);
-            System.out.println("服务器响应： " + in.readUTF());
+            System.out.println("Server's response is:\n" + in.readUTF());
             client.close();
         }catch(IOException e)
         {

@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface Output {
     List<String> printResult(Alphabetizer alphabetizer);
-    void writeFile(Alphabetizer alphabetizer);
+    void writeFile(Alphabetizer alphabetizer, String path);
 }
