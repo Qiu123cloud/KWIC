@@ -1,92 +1,81 @@
 package cn.edu.bupt.KWICSystem.line.impl;
 
 import cn.edu.bupt.KWICSystem.line.Line;
-
 import java.util.ArrayList;
 
 public class LineImpl implements Line {
-
     private ArrayList<String> words_ = new ArrayList<>();
 
     @Override
-    public void setChar(char ch, int pos, int whichWord) {
-        char[] word;
+    public void setChar(char ch, int pos, int word_index) {
+        char[] word_;
 
-        if (whichWord < words_.size()) {
-            word = words_.get(whichWord).toCharArray();
-            word[pos] = ch;
-            words_.set(whichWord, new String(word, 0, word.length));
+        if (word_index < words_.size()) {
+            word_ = words_.get(word_index).toCharArray();
+            word_[pos] = ch;
+            words_.set(word_index, new String(word_, 0, word_.length));
         }
     }
 
     @Override
-    public char getChar(int pos, int whichWord) {
-        char result = 0;
-
-        if (whichWord < words_.size()) {
-            char[] word = words_.get(whichWord).toCharArray();
-            result = word[pos];
+    public char getChar(int pos, int word_index) {
+        if (word_index < words_.size()) {
+            char[] word = words_.get(word_index).toCharArray();
+            return word[pos];
         }
-
-        return result;
+        return 0;
     }
 
     @Override
-    public void addChar(char ch, int whichWord) {
-        char[] word;
-        char[] new_word;
+    public void addChar(char ch, int word_index) {
+        char[] word_;
+        char[] new_word_;
 
-        if (whichWord < words_.size()) {
-            word = words_.get(whichWord).toCharArray();
-            new_word = new char[word.length + 1];
-            new_word[word.length] = ch;
-            words_.set(whichWord, new String(new_word, 0, word.length + 1));
+        if (word_index < words_.size()) {
+            word_ = words_.get(word_index).toCharArray();
+            new_word_ = new char[word_.length + 1];
+            new_word_[word_.length] = ch;
+            words_.set(word_index, new String(new_word_, 0, word_.length + 1));
         }
     }
 
     @Override
-    public void deleteChar(int pos, int whichWord) {
-        StringBuffer word;
+    public void deleteChar(int pos, int word_index) {
+        StringBuffer word_;
 
-        if (whichWord < words_.size()) {
-            word = new StringBuffer(words_.get(whichWord));
-            word.deleteCharAt(pos);
-            words_.set(whichWord, word.toString());
+        if (word_index < words_.size()) {
+            word_ = new StringBuffer(words_.get(word_index));
+            word_.deleteCharAt(pos);
+            words_.set(word_index, word_.toString());
         }
     }
 
     @Override
-    public int getCharCount(int whichWord) {
-        int count = -1;
-
-        if (whichWord < words_.size()) {
-            count = words_.get(whichWord).length();
+    public int getCharCount(int word_index) {
+        if (word_index < words_.size()) {
+            return words_.get(word_index).length();
         }
-
-        return count;
+        return -1;
     }
 
     @Override
-    public void setWord(char[] word, int whichWord) {
-        setWord(new String(word), whichWord);
+    public void setWord(char[] word, int word_index) {
+        setWord(new String(word), word_index);
     }
 
     @Override
-    public void setWord(String word, int whichWord) {
-        if (whichWord < words_.size()) {
-            words_.set(whichWord, word);
+    public void setWord(String word, int word_index) {
+        if (word_index < words_.size()) {
+            words_.set(word_index, word);
         }
     }
 
     @Override
-    public String getWord(int whichWord) {
-        String word = null;
-
-        if (whichWord < words_.size()) {
-            word = words_.get(whichWord);
+    public String getWord(int word_index) {
+        if (word_index < words_.size()) {
+            return words_.get(word_index);
         }
-
-        return word;
+        return null;
     }
 
     @Override
@@ -105,18 +94,14 @@ public class LineImpl implements Line {
     }
 
     @Override
-    public void deleteWord(int whichWord) {
-        if (whichWord < words_.size()) {
-            words_.remove(whichWord);
+    public void deleteWord(int word_index) {
+        if (word_index < words_.size()) {
+            words_.remove(word_index);
         }
     }
 
     @Override
     public int getWordCount() {
-        int count = 0;
-
-        count = words_.size();
-
-        return count;
+        return words_.size();
     }
 }

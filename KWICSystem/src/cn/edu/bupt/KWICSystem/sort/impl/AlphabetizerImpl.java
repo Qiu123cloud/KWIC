@@ -33,8 +33,8 @@ public class AlphabetizerImpl implements Alphabetizer {
         lineSort = new int[this.shift.getLineCount()];
         for(int i = 0; i < lineSort.length; i++)
             lineSort[i] = i;
-        //heapsort();//堆排
-        quickSort(lineSort,0,lineSort.length-1);//快排
+        heapsort();//堆排
+        // quickSort(lineSort,0,lineSort.length-1);//快排
 
     }
     private void quickSort(int[] lineSort,int left,int right)            //快速排序算法
